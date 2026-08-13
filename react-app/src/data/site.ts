@@ -4,7 +4,7 @@
  */
 
 /** Where the contact form's mailto: lands. Change this one line to redirect enquiries. */
-export const CONTACT_EMAIL = "mcosti@sprynet.com";
+export const CONTACT_EMAIL = "costarellainnovationsllc@gmail.com";
 
 export const ORG = {
   name: "Statehouse",

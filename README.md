@@ -53,8 +53,9 @@ changes never require touching JSX.
 Two things worth knowing:
 
 - **`CONTACT_EMAIL`** at the top of `site.ts` is where the contact form's
-  `mailto:` lands. It is currently `mcosti@sprynet.com`. Changing that one
-  constant redirects the form, the sidebar link, and the footer link together.
+  `mailto:` lands. It is currently `costarellainnovationsllc@gmail.com`.
+  Changing that one constant redirects the form, the sidebar link, and the
+  footer link together.
 - **The `STATS` tiles are hand-maintained.** "200+ applications published" tracks
   the fleet manifest; update it when the count moves meaningfully.
 
