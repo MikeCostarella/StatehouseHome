@@ -33,11 +33,10 @@ function validate(f: Fields): Partial<Record<keyof Fields, string>> {
 }
 
 /**
- * Composes a mailto: link and hands off to the visitor's mail client. No server,
- * no third-party form handler, and nothing about the visitor leaves the page
- * until they press send in their own email app.
+ * The message this form produces. One composition, three ways to send it -
+ * see the note on the fallbacks below.
  */
-function buildMailto(f: Fields): string {
+function compose(f: Fields): { subject: string; body: string } {
   const subject = `[Statehouse] ${f.subject}${f.county.trim() ? ` — ${f.county.trim()}` : ""}`;
   const body = [
     f.message.trim(),
@@ -51,8 +50,70 @@ function buildMailto(f: Fields): string {
   ]
     .filter((line): line is string => line !== null)
     .join("\n");
+  return { subject, body };
+}
 
+/**
+ * Hands off to whatever the visitor has registered for mail links.
+ *
+ * The catch, and the reason the fallbacks below exist: if nothing is
+ * registered - webmail users, or a machine where the mail client never
+ * claimed the mailto: protocol - this navigation does NOTHING. No error, no
+ * draft, no feedback. The visitor concludes the site is broken. That failure
+ * is silent by design of the protocol, and cannot be detected from script,
+ * so the only honest answer is to offer alternatives the moment we hand off.
+ */
+function buildMailto(f: Fields): string {
+  const { subject, body } = compose(f);
   return `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+}
+
+/**
+ * A Gmail compose tab, which needs no mail handler at all. Same approach the
+ * health-access apps in the fleet use (providerUpdateEmail.ts).
+ */
+function buildGmailUrl(f: Fields): string {
+  const { subject, body } = compose(f);
+  const params = new URLSearchParams({
+    view: "cm",
+    fs: "1",
+    to: CONTACT_EMAIL,
+    su: subject,
+    body,
+  });
+  return `https://mail.google.com/mail/?${params.toString()}`;
+}
+
+/** The whole message as text, for the visitor who uses neither. */
+function asPlainText(f: Fields): string {
+  const { subject, body } = compose(f);
+  return `To: ${CONTACT_EMAIL}\nSubject: ${subject}\n\n${body}`;
+}
+
+/** Clipboard with a fallback for browsers that refuse the async API. */
+async function copyText(text: string): Promise<boolean> {
+  try {
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(text);
+      return true;
+    }
+  } catch {
+    /* fall through to the textarea trick */
+  }
+  try {
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    ta.style.position = "fixed";
+    ta.style.opacity = "0";
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    const ok = document.execCommand("copy");
+    document.body.removeChild(ta);
+    return ok;
+  } catch {
+    return false;
+  }
 }
 
 const inputClass =
@@ -62,6 +123,7 @@ export default function Contact() {
   const [fields, setFields] = useState<Fields>(EMPTY);
   const [errors, setErrors] = useState<Partial<Record<keyof Fields, string>>>({});
   const [handedOff, setHandedOff] = useState(false);
+  const [copied, setCopied] = useState<boolean | null>(null);
 
   const set = (key: keyof Fields) => (value: string) => {
     setFields((prev) => ({ ...prev, [key]: value }));
@@ -76,6 +138,11 @@ export default function Contact() {
 
     window.location.href = buildMailto(fields);
     setHandedOff(true);
+    setCopied(null);
+  }
+
+  async function onCopy() {
+    setCopied(await copyText(asPlainText(fields)));
   }
 
   return (
@@ -177,11 +244,44 @@ export default function Contact() {
             </p>
           </div>
 
-          <p aria-live="polite" className="min-h-6 text-sm text-cyan-accent">
-            {handedOff
-              ? `Your email app should have opened with a draft to ${CONTACT_EMAIL}. If it didn't, write to us directly at that address.`
-              : ""}
-          </p>
+          {/* Revealed only after handing off. A mailto: that goes nowhere gives
+              no signal we can detect, so rather than guess, we say what should
+              have happened and put the alternatives right where someone looks
+              when it didn't. Cluttering the form with three buttons up front
+              would cost every visitor to help the few. */}
+          <div aria-live="polite" className="min-h-6">
+            {handedOff && (
+              <div className="rounded-md border border-steel-500/60 bg-white/[0.03] p-4">
+                <p className="text-sm text-cyan-accent">
+                  Your email app should have opened with a draft to {CONTACT_EMAIL}.
+                </p>
+                <p className="mt-2 text-sm text-ink-muted">Nothing happened? Two other ways:</p>
+                <div className="mt-3 flex flex-wrap items-center gap-3">
+                  <a
+                    href={buildGmailUrl(fields)}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="rounded-md border border-steel-500 px-4 py-2 text-sm font-semibold text-ink transition-colors hover:border-cyan-accent hover:text-cyan-accent"
+                  >
+                    Open in Gmail
+                  </a>
+                  <button
+                    type="button"
+                    onClick={onCopy}
+                    className="rounded-md border border-steel-500 px-4 py-2 text-sm font-semibold text-ink transition-colors hover:border-cyan-accent hover:text-cyan-accent"
+                  >
+                    Copy the message
+                  </button>
+                  {copied === true && <span className="text-sm text-cyan-accent">Copied — paste it into any email.</span>}
+                  {copied === false && (
+                    <span className="text-sm text-orange-300">
+                      Couldn't copy — select the message above and copy it by hand.
+                    </span>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
         </form>
 
         <aside className="h-fit rounded-lg border border-steel-500/60 bg-white/[0.03] p-6">
