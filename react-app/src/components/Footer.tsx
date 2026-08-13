@@ -1,10 +1,33 @@
 import { CONTACT_EMAIL, ORG } from "../data/site";
 
+/**
+ * The build stamp is formatted in Eastern time with the zone shown, not in
+ * the visitor's locale.
+ *
+ * It exists so a deploy can be confirmed at a glance, and that only works if
+ * it reads the same to everyone looking at it — a browser-local time makes
+ * the same build appear to be several different builds depending on who
+ * asks. Matches how StatehouseUI stamps its header (constants.ts).
+ */
+const STAMP_FORMAT = new Intl.DateTimeFormat("en-US", {
+  timeZone: "America/New_York",
+  // Explicit components, NOT dateStyle/timeStyle: the spec forbids combining
+  // those with timeZoneName and Intl throws if you try. Same field list as
+  // StatehouseUI's header stamp, for the same reason.
+  month: "short",
+  day: "numeric",
+  year: "numeric",
+  hour: "numeric",
+  minute: "2-digit",
+  hour12: true,
+  timeZoneName: "short",
+});
+
 export default function Footer() {
   const built = new Date(__BUILD_TIME__);
   const stamp = Number.isNaN(built.valueOf())
     ? __BUILD_TIME__
-    : built.toLocaleString("en-US", { dateStyle: "medium", timeStyle: "short" });
+    : STAMP_FORMAT.format(built);
 
   return (
     <footer className="border-t border-steel-500/60 bg-navy-950">
