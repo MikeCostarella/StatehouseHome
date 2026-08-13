@@ -1,0 +1,5 @@
+node_modules/
+react-app/dist/
+_to_delete/
+Thumbs.db
+Desktop.ini
