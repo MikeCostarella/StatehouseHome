@@ -22,7 +22,9 @@ export const HERO = {
     "jurisdictions, hydrants, school districts, water providers, tax rates. It is scattered " +
     "across dozens of portals, buried in PDFs, or locked behind viewers that fall apart on a " +
     "phone. Statehouse gathers it, standardizes it, and publishes it as fast, free, " +
-    "mobile-friendly maps and directories — one app per county, per subject.",
+    "mobile-friendly maps and directories — one app per county, per subject. It started " +
+    "as a commission from the Trumbull County Board of Health; the infrastructure built " +
+    "for that one map now runs more than 200 applications across all 88 counties.",
   primaryCta: { label: "Explore the county map", href: ORG.countyHub },
   secondaryCta: { label: "Talk to us", href: "#contact" },
 };
@@ -30,8 +32,8 @@ export const HERO = {
 export const STATS: { value: string; label: string }[] = [
   { value: "88", label: "Ohio counties in scope" },
   { value: "200+", label: "Applications published" },
-  { value: "100%", label: "Free and public to use" },
-  { value: "0", label: "Trackers or paywalls" },
+  { value: "100%", label: "Free to read, no account" },
+  { value: "0", label: "Trackers or ads" },
 ];
 
 export const GOALS: { title: string; body: string }[] = [
@@ -50,11 +52,14 @@ export const GOALS: { title: string; body: string }[] = [
       "stay usable standing in a parking lot or a field.",
   },
   {
-    title: "Keep it open and free",
+    title: "Keep the record free",
     body:
-      "Every app is public, free to use, and needs no account. The source lives on GitHub " +
-      "and the sites deploy to GitHub Pages. No advertising, no trackers, no reselling of " +
-      "the public's own data back to the public.",
+      "Looking is free, and stays free. Every app that publishes a county's own public " +
+      "record is free to use — no advertising, no trackers, no reselling the public's data " +
+      "back to the public. What carries a price is work the app does for you: sending a " +
+      "notice to your customers, keeping a dataset current, a private deployment on your " +
+      "own servers, the heavy transformation it sometimes takes to make a record usable at " +
+      "all. That is how this started, and it is what pays for everything given away since.",
   },
   {
     title: "One pattern, every county",
@@ -152,6 +157,15 @@ export const PROCESS: { step: string; title: string; body: string }[] = [
     body:
       "A deployed, public, mobile-friendly site at its own address, plus the source code, " +
       "plus a repeatable path to refresh it when the underlying data changes.",
+  },
+  {
+    step: "04",
+    title: "What it costs",
+    body:
+      "Nothing, to publish a county's public record and put it online for residents. Work " +
+      "beyond that — a deployment on your own servers, a dataset kept current, features " +
+      "that send, notify or act on the data rather than display it — is quoted directly. " +
+      "The first of those was the Trumbull County Board of Health in June 2026.",
   },
 ];
 

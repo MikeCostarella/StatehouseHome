@@ -9,7 +9,7 @@ export default function Process() {
       heading="From a conversation to a live site"
       lede="There is no procurement cycle here and no platform to buy into. The path from asking to a working, public application is short on purpose."
     >
-      <ol className="grid gap-6 md:grid-cols-3">
+      <ol className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
         {PROCESS.map((step) => (
           <li
             key={step.step}
