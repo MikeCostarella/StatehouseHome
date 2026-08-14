@@ -67,6 +67,8 @@ export default function Footer() {
             <li>
               <a
                 href={`mailto:${CONTACT_EMAIL}`}
+                target="_blank"
+                rel="noreferrer"
                 className="text-ink-muted transition-colors hover:text-cyan-accent"
               >
                 {CONTACT_EMAIL}

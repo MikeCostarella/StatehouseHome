@@ -69,6 +69,26 @@ function buildMailto(f: Fields): string {
 }
 
 /**
+ * Open a mailto: WITHOUT navigating this tab away.
+ *
+ * `window.location.href = mailto:...` looks safe and is what this used to do,
+ * because a native mail client intercepts the navigation and the page stays
+ * put. But a visitor who has registered a WEB handler - Gmail, Outlook Web -
+ * gets a real URL back, and assigning to location.href replaces this page
+ * with the compose window. The form, and whatever they were doing, is gone;
+ * when they finish sending, there is nothing to come back to.
+ *
+ * Opening in a new tab behaves correctly under both: a native client still
+ * intercepts, a web handler gets its own tab, and this page survives either
+ * way. If a popup blocker refuses the window we fall back to the old
+ * behaviour, since losing the page beats losing the message.
+ */
+function openMail(url: string): void {
+  const opened = window.open(url, "_blank", "noopener");
+  if (!opened) window.location.href = url;
+}
+
+/**
  * A Gmail compose tab, which needs no mail handler at all. Same approach the
  * health-access apps in the fleet use (providerUpdateEmail.ts).
  */
@@ -136,7 +156,7 @@ export default function Contact() {
     setErrors(found);
     if (Object.keys(found).length > 0) return;
 
-    window.location.href = buildMailto(fields);
+    openMail(buildMailto(fields));
     setHandedOff(true);
     setCopied(null);
   }
@@ -286,8 +306,13 @@ export default function Contact() {
 
         <aside className="h-fit rounded-lg border border-steel-500/60 bg-white/[0.03] p-6">
           <h3 className="text-lg font-semibold text-ink">Prefer plain email?</h3>
+          {/* target=_blank for the same reason openMail() exists: with a web
+              mail handler registered, a bare mailto: anchor navigates this
+              page away to the compose window. */}
           <a
             href={`mailto:${CONTACT_EMAIL}`}
+            target="_blank"
+            rel="noreferrer"
             className="mt-2 block break-all font-semibold text-cyan-accent underline underline-offset-4 hover:text-white"
           >
             {CONTACT_EMAIL}
