@@ -23,8 +23,10 @@ export const HERO = {
     "across dozens of portals, buried in PDFs, or locked behind viewers that fall apart on a " +
     "phone. Statehouse gathers it, standardizes it, and publishes it as fast, free, " +
     "mobile-friendly maps and directories — one app per county, per subject. It started " +
-    "as a commission from the Trumbull County Board of Health; the infrastructure built " +
-    "for that one map now runs more than 200 applications across all 88 counties.",
+    "with a public records request in Girard: water service accounts and registered rental " +
+    "locations, mapped. The Trumbull County Combined Health District saw the work and " +
+    "commissioned the next one. The infrastructure built for those now runs more than 200 " +
+    "applications across all 88 counties.",
   primaryCta: { label: "Explore the county map", href: ORG.countyHub },
   secondaryCta: { label: "Talk to us", href: "#contact" },
 };
@@ -165,7 +167,7 @@ export const PROCESS: { step: string; title: string; body: string }[] = [
       "Nothing, to publish a county's public record and put it online for residents. Work " +
       "beyond that — a deployment on your own servers, a dataset kept current, features " +
       "that send, notify or act on the data rather than display it — is quoted directly. " +
-      "The first of those was the Trumbull County Board of Health in June 2026.",
+      "The first of those was the Trumbull County Combined Health District in June 2026.",
   },
 ];
 
